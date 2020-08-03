@@ -1,0 +1,9 @@
+boto3
+configparser
+pathlib
+datetime
+argparse
+awscli
+click
+tabulate
+ansible>=2.8,<2.9
