@@ -113,13 +113,18 @@ RUN [[ "${HCLOUD}" == "true" || "${HCLOUD}" == "yes" ]] \
 
 ## Install bitwarden
 RUN [[ "${BITWARDEN}" == "true" || "${BITWARDEN}" == "yes" ]] \
-  && bash /usr/local/sbin/get.sh bitwarden ${BITWARDENVERSION}
+  && bash /usr/local/sbin/get.sh bitwarden ${BITWARDENVERSION} \
+  || true
   
 ## Install lastpass cli
-RUN [[ "${LASTPASS}" == "true" ]] && bash /usr/local/sbin/get.sh lastpass
+RUN [[ "${LASTPASS}" == "true" || "${LASTPASS}" == "yes" ]] \
+  && bash /usr/local/sbin/get.sh lastpass \
+  || true
 
-## Install keyvault
-RUN [[ "${KEYVAULT}" == "true" ]] && bash /usr/local/sbin/get.sh key_vault
+## Install keyvault 
+RUN [[ "${KEYVAULT}" == "true" ]] \
+  && bash /usr/local/sbin/get.sh key_vault \
+  || true
 
 ## Make sure all scripts & such are executable
 RUN chmod +x /usr/local/sbin/*
