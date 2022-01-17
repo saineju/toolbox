@@ -23,7 +23,10 @@ def get_instances(ec2,ssm):
             data.append(instance.get('InstanceType','Unknown'))
             data.append(instance.get('KeyName','Unknown'))
             state = instance.get('State')
-            data.append(state.get('Name','Unknown'))
+            if (state):
+                data.append(state.get('Name','Unknown'))
+            else:
+                data.append('Unknown')
             if 'PrivateIpAddress' in instance:
                 data.append(instance['PrivateIpAddress'])
             else:
