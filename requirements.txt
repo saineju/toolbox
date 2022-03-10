@@ -6,4 +6,4 @@ argparse
 awscli
 click
 tabulate
-ansible>=2.8,<2.9
+ansible>=2.9,<2.10
