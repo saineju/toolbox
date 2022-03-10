@@ -19,6 +19,8 @@ ARG BITWARDEN=true
 ARG BITWARDENVERSION=latest
 ARG LASTPASS=true
 ARG KEYVAULT=true
+ARG VAULT=true
+ARG VAULTVERSION=vault
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -55,6 +57,16 @@ COPY --chown=$UNAME .ssh /home/$UNAME/.ssh
 ## Install python modules
 RUN pip3 install -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
+## Install Hashicorp Vault
+RUN [[ "${VAULT}" == "true" || "${VAULT}" == "yes" ]] \
+ && arch=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/') \
+ && curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - \
+ && apt-add-repository "deb [arch=${arch}] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+ && apt-get install -y ${VAULTVERSION} libcap2 \
+ && setcap cap_ipc_lock= /usr/bin/vault \
+ && sed -i 's/^plugins=(\(.*\))/plugins=(\1 vault)/' /home/$UNAME/.zshrc \
+ || true
+
 ## Install heroku cli
 RUN [[ "${HEROKU}" == "true" || "${HEROKU}" == "yes" ]] \
  && echo "deb https://cli-assets.heroku.com/apt ./" > /etc/apt/sources.list.d/heroku.list \
@@ -84,13 +96,15 @@ RUN [[ "${GCLOUD}" == "true" || "${GCLOUD}" == "yes" ]] \
 
 ## Install AWS Session manager
 RUN [[ "${AWS_SSM}" == "true" || "${AWS_SSM}" == "yes" ]] \
- && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "/tmp/session-manager-plugin.deb" \
+ && arch=$(uname -m | sed -e 's/x86_64/64bit/' -e 's/aarch64/arm64/') \
+ && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${arch}/session-manager-plugin.deb" -o "/tmp/session-manager-plugin.deb" \
  && dpkg -i /tmp/session-manager-plugin.deb && rm -f /tmp/session-manager-plugin.deb \
  || true
 
 ## Install AWS ECS CLI
 RUN [[ "${AWS_ECSCLI}" == "true" || "${AWS_ECSCLI}" == "yes" ]] \
- && curl -o /usr/local/sbin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
+ && arch=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/') \
+ && curl -o /usr/local/sbin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-${arch}-latest \
  || true
 
 ## Install helm & tiller

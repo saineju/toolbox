@@ -1,0 +1,38 @@
+version: '3.3'
+services:
+  toolbox:
+    build: 
+      context: ./
+      args:
+        UNAME: toolbox
+        UID: 1000
+        GID: 1000
+        TERRAFORM: true
+        TERRAFORMVERSION: terraform
+        HELM: true
+        HELMVERSION: latest
+        KUBECTL: false
+        KUBECTLVERSION: kubectl
+        HEROKU: true
+        GCLOUD: true
+        AWS_SSM: true
+        AWS_ECSCLI: true
+        HCLOUD: true
+        HCLOUDVERSION: latest
+        BITWARDEN: true
+        BITWARDENVERSION: latest
+        LASTPASS: true
+        KEYVAULT: true
+        VAULT: true
+        VAULTVERSION: vault
+    networks:
+      - toolbox-net
+    volumes:
+      - toolbox-home:/home/toolbox
+    container_name: toolbox
+    entrypoint: /bin/sleep infinity
+
+volumes:
+  toolbox-home:
+networks:
+  toolbox-net:

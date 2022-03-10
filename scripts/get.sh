@@ -1,5 +1,18 @@
 #!/bin/bash
 
+case $(uname -m) in
+  aarch64)
+    ARCH='arm64'
+  ;;
+  x86_64)
+    ARCH='amd64'
+  ;;
+  *)
+    echo "Unsupported arch"
+    exit 1
+  ;;
+esac
+
 install_terraform() {
     ver=$1
     if [[ "${ver}" == "" ||  "${ver}" == "latest" ]]; then
@@ -7,7 +20,7 @@ install_terraform() {
     fi
     echo "Attempting to install terraform version ${ver}"
     DOWNLOAD_URL="https://releases.hashicorp.com/terraform/${ver}"
-    FILE="terraform_${ver}_linux_amd64.zip"
+    FILE="terraform_${ver}_linux_${ARCH}.zip"
     SHASUMS="terraform_${ver}_SHA256SUMS"
     wget -qO /tmp/${FILE} ${DOWNLOAD_URL}/${FILE}
     wget -qO /tmp/${SHASUMS} ${DOWNLOAD_URL}/${SHASUMS}
@@ -29,7 +42,7 @@ function install_helm() {
     fi
     echo "Attempting to install helm version ${ver}"
     DOWNLOAD_URL="https://get.helm.sh"
-    FILE="helm-${ver}-linux-amd64.tar.gz"
+    FILE="helm-${ver}-linux-${ARCH}.tar.gz"
     SHASUMS="${FILE}.sha256"
     wget -qO /tmp/${FILE} ${DOWNLOAD_URL}/${FILE}
     wget -qO /tmp/${SHASUMS} ${DOWNLOAD_URL}/${SHASUMS}
@@ -40,7 +53,7 @@ function install_helm() {
         exit 1
     fi
     tar -xzvf ${FILE}
-    mv /tmp/linux-amd64/tiller /usr/local/sbin/
+    #mv /tmp/linux-amd64/tiller /usr/local/sbin/
     mv /tmp/linux-amd64/helm /usr/local/sbin/
     rm -rf /tmp/linux-amd64
     rm -f /tmp/${FILE}
@@ -54,7 +67,7 @@ function install_hcloud() {
     fi
     echo "Attempting to install Hetzner cloud cli version ${ver}"
     DOWNLOAD_URL="https://github.com/hetznercloud/cli/releases/download/${ver}"
-    FILE="hcloud-linux-amd64.tar.gz"
+    FILE="hcloud-linux-${ARCH}.tar.gz"
     wget -qO /tmp/${FILE} ${DOWNLOAD_URL}/${FILE}
     cd /tmp
     mkdir hcloud
@@ -67,6 +80,10 @@ function install_hcloud() {
 }
 
 function install_bitwarden() {
+    if [ "${ARCH}" == 'arm64' ]; then
+        echo "Unfortunately bitwarden does not have precompiled binary for arm64, and currently this task does not support building it."
+        exit 0
+    fi
     ver=$1
     if [[ "${ver}" == "" || "${ver}" == "latest" ]]; then
         ver=$(curl -s https://api.github.com/repos/bitwarden/cli/releases/latest|jq -r .tag_name)
@@ -114,7 +131,7 @@ function install_lastpass() {
 
 function install_key_vault() {
     cd /tmp
-    git clone --single-branch https://github.com/saineju/modular_key_vault.git
+    git clone --single-branch --branch support_aws_and_password https://github.com/saineju/modular_key_vault.git
     cd modular_key_vault
     cp -R backends /usr/local/sbin/
     cp -R support_scripts /usr/local/sbin/
@@ -157,5 +174,6 @@ while [ "$1" != "" ]; do
         *)
             echo "get $1 not implemented, sorry"
             exit 1
+            ;;
     esac
 done
