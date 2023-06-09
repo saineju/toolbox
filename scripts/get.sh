@@ -141,6 +141,15 @@ function install_key_vault() {
     rm -rf modular_key_vault
 }
 
+function install_awscliv2() {
+    cd /tmp
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install
+    rm -rf /tmp/aws
+    rm -f /tmp/awscliv2.zip
+}
+
 while [ "$1" != "" ]; do
     case $1 in
         terraform)
@@ -169,6 +178,10 @@ while [ "$1" != "" ]; do
             ;;
         key_vault)
             install_key_vault
+            shift
+            ;;
+        awscliv2)
+            install_awscliv2
             shift
             ;;
         *)

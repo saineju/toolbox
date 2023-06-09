@@ -11,6 +11,7 @@ ARG KUBECTL=true
 ARG KUBECTLVERSION=kubectl
 ARG HEROKU=true
 ARG GCLOUD=true
+ARG AWSCLI=true
 ARG AWS_SSM=true
 ARG AWS_ECSCLI=true
 ARG HCLOUD=true
@@ -33,7 +34,7 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 RUN apt-get update \ 
  && apt-get -y upgrade \
  && apt-get install -y curl gnupg-agent ca-certificates apt-transport-https python3-minimal python3-pip zsh git powerline fonts-powerline \
-    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils \
+    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils sshpass ncat \
  && dpkg-reconfigure --frontend noninteractive tzdata
 
 ## Set up user and zsh
@@ -94,6 +95,11 @@ RUN [[ "${GCLOUD}" == "true" || "${GCLOUD}" == "yes" ]] \
  && echo -e '## Gcloud autocomplete\nsource /usr/share/google-cloud-sdk/completion.zsh.inc' >> /home/${UNAME}/.zshrc \
  || true
 
+## Install AWSCLI v2
+RUN [[ "${AWSCLI}" == "true" || "${AWSLCI}" == "yes" ]] \
+ && bash /usr/local/sbin/get.sh awscliv2 \
+ || true
+
 ## Install AWS Session manager
 RUN [[ "${AWS_SSM}" == "true" || "${AWS_SSM}" == "yes" ]] \
  && arch=$(uname -m | sed -e 's/x86_64/64bit/' -e 's/aarch64/arm64/') \
@@ -150,4 +156,7 @@ VOLUME /home/$UNAME
 USER $UNAME
 WORKDIR /home/$UNAME
 
+
+
 entrypoint ["/bin/zsh"]
+
