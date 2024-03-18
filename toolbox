@@ -5,39 +5,25 @@ red='\033[0;31m'
 yellow='\033[0;33m'
 nc='\033[0m'
 
-## Toolbox variables
-toolbox_name="toolbox"
-toolbox_volume="toolbox"
-toolbox_image="toolbox"
-toolbox_tag="latest"
 
-## Create list of additional volumes
-declare -a volumes
-
-## add additional disks you want to be mounted
-volumes+=("-v ${HOME}/toolbox:/home/toolbox/shared")
-volumes+=("-v ${HOME}/git:/home/toolbox/git")
-
+toolbox_name=toolbox
+script_dir=$(dirname $0)
+cd ${script_dir}
 ## check that dependencies are installed
 command -v docker >/dev/null 2>&1 || { echo -e >&2 "${red}ERROR: ${yellow}docker${nc} is required, but not installed";error=1; }
+command -v docker-compose >/dev/null 2>&1 || { echo -e >&2 "${red}ERROR: ${yellow}docker-compose${nc} is required but not installed";error=1; }
+
+if [ "$1" == 'restart' ]; then
+    docker-compose down
+fi
 
 if [[ "${error}" == 1 ]]; then
     echo "Please install dependencies before continuing"
     exit 1
 fi
 
-## Check if toolbox has been built
-[[ "$(docker image inspect ${toolbox_image}:${toolbox_tag}>/dev/null 2>&1;echo $?)" == 0 ]] || \
-{ echo -e >&2 "${red}ERROR: ${nc}Please build ${yellow}${toolbox_image}:${toolbox_tag}${nc} before runnign this script.
-In the toolbox git directory run
-${yellow}docker build -t ${toolbox_image}:${toolbox_tag} .${nc}";exit 1; }
 
-## Check if toolbox volume exists
-[[ "$(docker volume inspect ${toolbox_volume}>/dev/null 2>&1;echo $?)" == 0 ]] || docker volume create toolbox
-
-## Check if toolbox is already running
-if [[ "$(docker container inspect -f '{{.State.Running}}' ${toolbox_name}>/dev/null 2>&1;echo $?)" == 0 ]]; then
-    exec docker exec -it ${toolbox_name} /bin/zsh
-else
-    exec docker run --rm -v ${toolbox_volume}:/home/toolbox ${volumes[@]} --name ${toolbox_name} -it ${toolbox_image}:${toolbox_tag}
+if [ "$(docker-compose top)" == "" ]; then
+    docker-compose up -d
 fi
+exec docker-compose exec toolbox zsh
