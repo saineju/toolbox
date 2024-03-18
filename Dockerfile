@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG UNAME=toolbox
 ARG UID=1000
@@ -22,6 +22,7 @@ ARG LASTPASS=true
 ARG KEYVAULT=true
 ARG VAULT=true
 ARG VAULTVERSION=vault
+ARG AZURE_CLI=true
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -33,8 +34,8 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 ## Install updates & required packages
 RUN apt-get update \ 
  && apt-get -y upgrade \
- && apt-get install -y curl gnupg-agent ca-certificates apt-transport-https python3-minimal python3-pip zsh git powerline fonts-powerline \
-    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils sshpass ncat \
+ && apt-get install -y curl gnupg-agent ca-certificates apt-transport-https python3-minimal python3-pip python3-venv zsh git powerline fonts-powerline \
+    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils sshpass ncat rsync tzdata yq jo iputils-ping \
  && dpkg-reconfigure --frontend noninteractive tzdata
 
 ## Set up user and zsh
@@ -145,6 +146,21 @@ RUN [[ "${LASTPASS}" == "true" || "${LASTPASS}" == "yes" ]] \
 RUN [[ "${KEYVAULT}" == "true" ]] \
   && bash /usr/local/sbin/get.sh key_vault \
   || true
+
+## Install Azure CLI
+RUN [[ "${AZURE_CLI}" == "true" || "${AZURE_CLI}" == "yes" ]] \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null \
+  && chmod go+r /etc/apt/keyrings/microsoft.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/azure-cli.list \
+  && apt-get update \
+  && apt-get install azure-cli \
+  || true
+  
+  
+## Add any additional CA's as trusted
+COPY ./ca_certs/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 ## Make sure all scripts & such are executable
 RUN chmod +x /usr/local/sbin/*
