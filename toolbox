@@ -11,10 +11,9 @@ script_dir=$(dirname $0)
 cd ${script_dir}
 ## check that dependencies are installed
 command -v docker >/dev/null 2>&1 || { echo -e >&2 "${red}ERROR: ${yellow}docker${nc} is required, but not installed";error=1; }
-command -v docker-compose >/dev/null 2>&1 || { echo -e >&2 "${red}ERROR: ${yellow}docker-compose${nc} is required but not installed";error=1; }
 
 if [ "$1" == 'restart' ]; then
-    docker-compose down
+    docker compose down
 fi
 
 if [[ "${error}" == 1 ]]; then
@@ -23,7 +22,7 @@ if [[ "${error}" == 1 ]]; then
 fi
 
 
-if [ "$(docker-compose top)" == "" ]; then
-    docker-compose up -d
+if [ "$(docker compose top)" == "" ]; then
+    docker compose up toolbox -d
 fi
-exec docker-compose exec toolbox zsh
+exec docker compose exec toolbox zsh

@@ -6,7 +6,7 @@ argparse
 #awscli
 click
 tabulate
-ansible>=2.9,<2.10
+ansible>=11,<12
 ansible-modules-hashivault==4.6.3
 ansible-lint==4.2.0
 netaddr

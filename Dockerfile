@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG UNAME=toolbox
 ARG UID=1000
@@ -35,11 +35,13 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 RUN apt-get update \ 
  && apt-get -y upgrade \
  && apt-get install -y curl gnupg-agent ca-certificates apt-transport-https python3-minimal python3-pip python3-venv zsh git powerline fonts-powerline \
-    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils sshpass ncat rsync tzdata yq jo iputils-ping \
+    vim nano language-pack-en software-properties-common lsof unzip wget jq dos2unix dnsutils sshpass ncat rsync tzdata jo iputils-ping jc neovim python3-neovim \
+    krb5-user proxychains-ng bsdmainutils \
  && dpkg-reconfigure --frontend noninteractive tzdata
 
 ## Set up user and zsh
-RUN groupadd -g $GID -o $UNAME \
+RUN userdel ubuntu \
+ && groupadd -g $GID -o $UNAME \
  && useradd -m -u $UID -g $GID -o -s /bin/zsh $UNAME \
  && apt-get clean \
  && su $UNAME -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" \
@@ -55,9 +57,6 @@ RUN wget -qO /usr/local/sbin/mfa_credentials.py https://raw.githubusercontent.co
 ## Copy zsh & .ssh configs
 COPY --chown=$UNAME .zshrc /home/$UNAME/.zshrc
 COPY --chown=$UNAME .ssh /home/$UNAME/.ssh
-
-## Install python modules
-RUN pip3 install -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
 ## Install Hashicorp Vault
 RUN [[ "${VAULT}" == "true" || "${VAULT}" == "yes" ]] \
@@ -167,6 +166,13 @@ RUN chmod +x /usr/local/sbin/*
 
 ## Make home dir persistent
 VOLUME /home/$UNAME
+
+## Install python modules
+RUN mkdir -p /opt/python3-venvs \
+ && python3 -m venv /opt/python3-venvs/default_venv \
+ && source /opt/python3-venvs/default_venv/bin/activate \
+ && pip3 install -r /tmp/requirements.txt \
+ && rm -f /tmp/requirements.txt
 
 ## Switch user & workdir
 USER $UNAME

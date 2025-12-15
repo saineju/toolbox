@@ -98,3 +98,4 @@ export EDITOR='nano'
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 [[ -f /tmp/ssh-agent ]] || ssh-agent > /tmp/ssh-agent
 source /tmp/ssh-agent
+source /opt/python3-venvs/default_venv/bin/activate
