@@ -139,6 +139,7 @@ function install_awscliv2() {
     ./aws/install
     rm -rf /tmp/aws
     rm -f /tmp/awscliv2.zip
+    rm -f /tmp/awscliv2.sig
 }
 
 while [ "$1" != "" ]; do

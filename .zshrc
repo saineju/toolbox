@@ -15,7 +15,6 @@ autoload -Uz bashcompinit && bashcompinit
 zstyle ':completion:*' menu select
 
 ## Python venv (activate before tool completions that may need it)
-#source /opt/python3-venvs/default_venv/bin/activate
 export PATH=/opt/toolbox/bin:$PATH
 
 ## Tool completions
@@ -34,8 +33,8 @@ command -v ansible-playbook &>/dev/null && eval "$(register-python-argcomplete a
   && source /usr/share/google-cloud-sdk/completion.zsh.inc
 
 ## SSH agent
-[[ -f /tmp/ssh-agent ]] || ssh-agent > /tmp/ssh-agent
-source /tmp/ssh-agent
+[[ -f $HOME/.ssh/ssh-agent ]] || ssh-agent > $HOME/.ssh/ssh-agent
+source $HOME/.ssh/ssh-agent
 
 ## Aliases
 alias describe-instances="describe.py instances"

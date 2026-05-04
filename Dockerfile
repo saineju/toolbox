@@ -155,7 +155,7 @@ RUN [[ "${HELM}" == "true" || "${HELM}" == "yes" ]] \
 ## Install terraform
 RUN [[ "${TERRAFORM}" == "true" || "${TERRAFORM}" == "yes" ]] \
  && bash /usr/local/sbin/get.sh terraform ${TERRAFORMVERSION} 
-# || true
+ || true
 
 ## Install hetzner cloud
 RUN [[ "${HCLOUD}" == "true" || "${HCLOUD}" == "yes" ]] \
