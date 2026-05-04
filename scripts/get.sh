@@ -53,9 +53,8 @@ function install_helm() {
         exit 1
     fi
     tar -xzvf ${FILE}
-    #mv /tmp/linux-amd64/tiller /usr/local/sbin/
-    mv /tmp/linux-amd64/helm /usr/local/sbin/
-    rm -rf /tmp/linux-amd64
+    mv /tmp/linux-${ARCH}/helm /usr/local/sbin/
+    rm -rf /tmp/linux-${ARCH}
     rm -f /tmp/${FILE}
     rm -f /tmp/${SHASUMS}
 }
@@ -68,8 +67,15 @@ function install_hcloud() {
     echo "Attempting to install Hetzner cloud cli version ${ver}"
     DOWNLOAD_URL="https://github.com/hetznercloud/cli/releases/download/${ver}"
     FILE="hcloud-linux-${ARCH}.tar.gz"
+    SHASUMS="hetzner_checksums.txt"
     wget -qO /tmp/${FILE} ${DOWNLOAD_URL}/${FILE}
+    wget -qO /tmp/${SHASUMS} $DOWNLOAD_URL/checksums.txt
     cd /tmp
+    grep -Eo "^.* ${FILE}" ${SHASUMS}|sha256sum -c
+    if [ $? != 0 ]; then
+        echo "Checksums did not match, downloaded file is corrupted, exiting"
+        exit 1
+    fi
     mkdir hcloud
     cd hcloud
     tar -xzvf /tmp/${FILE}
@@ -77,6 +83,7 @@ function install_hcloud() {
     mv /tmp/hcloud/hcloud /usr/local/sbin/
     rm -rf /tmp/hcloud
     rm -f /tmp/${FILE}
+    rm -f /tmp/${SHASUMS}
 }
 
 function install_bitwarden() {
@@ -106,29 +113,6 @@ function install_bitwarden() {
     rm -f /tmp/${SHASUMS}
 }
 
-function install_lastpass() {
-    apt-get --no-install-recommends -y install \
-    bash-completion \
-    build-essential \
-    cmake \
-    libcurl4  \
-    libcurl4-openssl-dev  \
-    libssl-dev  \
-    libxml2 \
-    libxml2-dev  \
-    libssl1.1 \
-    pkg-config \
-    ca-certificates \
-    xclip
-    cd /tmp
-    git clone --single-branch https://github.com/lastpass/lastpass-cli.git
-    cd lastpass-cli
-    make
-    make install
-    cd /tmp
-    rm -rf lastpass-cli
-}
-
 function install_key_vault() {
     cd /tmp
     git clone --single-branch --branch support_aws_and_password https://github.com/saineju/modular_key_vault.git
@@ -143,7 +127,14 @@ function install_key_vault() {
 
 function install_awscliv2() {
     cd /tmp
+    gpg --import awscli.pgp
     curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip.sig" -o "awscliv2.sig"
+    gpg --verify awscliv2.sig awscliv2.zip
+    if [ $? != 0 ]; then
+        echo "Signature does not match, download corrupted, exiting"
+        exit 1
+    fi
     unzip awscliv2.zip
     ./aws/install
     rm -rf /tmp/aws
@@ -170,10 +161,6 @@ while [ "$1" != "" ]; do
         bitwarden)
             shift
             install_bitwarden $1
-            shift
-            ;;
-        lastpass)
-            install_lastpass
             shift
             ;;
         key_vault)
