@@ -14,54 +14,49 @@ You need to have docker installed. It is recommendable to prefer official docker
 For more information: https://docs.docker.com/docker-for-windows/install/
 
 ### MacOS specific
-I prefer to use Iterm2 with Solarized Dark -theme and as the container uses Oh-My-Zsh and Powerlevel10, I find it necessary to install Meslo fonts -> https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k
-
-## Building the docker
-
-```
-docker build . -t toolbox
-``` 
+I prefer to use Solarized Dark -theme and as the container uses starship, I find it necessary to install nerd fonts -> https://www.nerdfonts.com/font-downloads (I prefer MesloLG)
 
 ## Usage
-
-#### Linux & MacOS
-The dockerfile creates VOLUME for `/home/toolbox`, to ensure that the volume stays persistent between container boots, it's best to create a named volume for the container and use that always
-
-```
-docker volume create toolbox
-```
-
-And start the box with
+Copy the docker-compose.example.yml to docker-compose.yml and modify to your likings, you may for example want to pin tool version numbers or disable some tools you don't need.
+Optionally build before starting the container
 
 ```
-docker run -v toolbox:/home/toolbox --rm -it toolbox
+docker compose build
+``` 
+
+After building just start the toolbox to background
+
+```
+docker compose up -d
 ```
 
-I personally like to share some volumes from my base system, such as git, so to do that, just specify the required mounts during startup:
+Enter the toolbox with toolbox -script or by executing
 
 ```
-docker run -v toolbox:/home/toolbox -v ${HOME}/git:/home/toolbox/git -v ${HOME}/toolbox:/home/toolbox/shared --rm -it toolbox
+docker compose exec toolbox zsh
 ```
 
-#### Windows
-
-TBD
+By default the docker compose creates persistent home directory and mounts .zshrc and starship configuration toml from the local directory
+There are three default starship themes exported to starship directory, gruvbox-rainbow being the default, but you can change it as you please
 
 ## Features
 
 Official cli's, tools an customizations. Most of these should support also tabulator autocomplete
-* ZSH shell with oh my zsh & powerlevel9k theme installed by default
+* ZSH shell with starship prompt installed by default
+* ansible
+
+Optionally, can be switched with environment arguments in the compose file. By default all are enabled.
+
 * aws cli
 * ssm session-manager support for AWS (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html)
 * heroku cli
 * gcloud cli
 * kubectl
-* helm & tiller
+* helm
 * terraform
-* ansible
-* aws ecs cli
-* bitwarden cli
-* lastpass cli
+* bitwarden cli (only amd64)
+* azure cli
+* hetzner cloud cli
 
 My personal scripts to make my life a bit easier:
 * helper script for parsing AWS cli (parse_aws_creds.py)
@@ -81,14 +76,21 @@ By default all cli's mentioned above are installed during build, but if you wish
 * heroku cli (HEROKU)
 * gcloud cli (GCLOUD)
 * kubectl (KUBECTL)
-* Helm & tiller (HELM)
+* Helm (HELM)
 * AWS SSM (AWS_SSM)
 * Terraform (TERRAFORM
-* AWS ECS cli (AWS_ECSCLI)
+* Azure cli (AZURE_CLI)
+* Hetzner cloud cli (HCLOUD)
+* Terraform (TERRAFORM)
+* Starship (STARSHIP)
+* Uv (UV)
 
-To exclude tool, you need to add build-arg to the build command, argument names are mentioned in brackets above, for example
+You can also exlude my tools
 
-`docker build --build-arg HEROKU=false`
+* Modular Key vault (KEYVAULT)
+* MFA helper (MFAHELPER)
+
+To exclude tool, you need to change the variable to 'false' in the compose file
 
 ## Installing specific version of a tool
 
@@ -97,19 +99,19 @@ By default latest versions of the tools above are installed, but following tools
 * kubectl (KUBECTLVERSION)
 * Terraform (TERRAFORMVERSION)
 * Helm (HELMVERSION)
+* Vault (VAULTVERSION)
+* Terraform (TERRAFORMVERSION)
+* Kubectl (KUBECTLVERSION)
+* Hetzner cloud (HCLOUDVERSION)
+* Bitwarden (BITWARDENVERSION)
+* Starship (STARSHIPVERSION)
+* Uv (UVVERSION)
 
-To install specific version of the tools, you need to add build-arg to the build command, argument manes are mentioned in brackets above, for example
+To install specific version of the tools, you need to change the variable to specific version in the compose file, for example
 
-`docker build --build-arg TERRAFORM=0.12.11`
+`TERRAFORMVERSION=0.12.11`
 
-* Kubectl is installed with apt, so you may check different versions available with command `apt-cache madison kubectl`
-  - Expected format for KUBECTLVERSION is `kubectl=1.6.7-00`
-* Terraform is downloaded from Hashicorp, so you may check different versions from https://releases.hashicorp.com/terraform/
-  - Expected version format for Terraform is `0.12.12` 
-* Helm is installed by downloading release from github, so you may check different versions from https://github.com/helm/helm/releases
-  - Expected version format for Helm is `v2.15.2`
-
-## Remote management over SSM
+The expected version format is always without 'v' in front to unify the approach. The downloader script adds it if needed.
 
 SSM can be used to start interactice shell sessions to any hosts that have SSM enabled. You can see SSM status on machines with `describe-instances` -command.
 
