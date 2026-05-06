@@ -1,0 +1,251 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[](color_slate)\
+$os\
+$username\
+$hostname\
+[](bg:color_amber fg:color_slate)\
+$directory\
+[](fg:color_amber bg:color_sage)\
+$git_branch\
+$git_status\
+[](fg:color_sage bg:color_twilight)\
+$c\
+$cpp\
+$rust\
+$golang\
+$nodejs\
+$php\
+$java\
+$kotlin\
+$haskell\
+$python\
+[](fg:color_twilight bg:color_muted_dusk)\
+$docker_context\
+$conda\
+$pixi\
+$kubernetes\
+$terraform\
+$aws\
+$azure\
+$gcloud\
+[](fg:color_muted_dusk bg:color_deep_dusk)\
+$time\
+[ ](fg:color_deep_dusk)\
+$cmd_duration\
+$status\
+$sudo\
+$line_break$character"""
+
+palette = 'dusk'
+
+[palettes.dusk]
+color_parchment = '#ddd9d0'  # text
+color_deep_dusk = '#282838'  # time bg
+color_muted_dusk = '#3e3e54'  # cloud/infra bg
+color_twilight = '#607a9a'  # languages bg
+color_sage = '#609880'  # git bg
+color_soft_sage = '#88a888'  # success prompt
+color_slate = '#4a5468'  # username/OS bg
+color_wisteria = '#b49ec4'  # vim modes
+color_dusty_rose = '#bf7a7a'  # errors/root
+color_amber = '#a88a68'  # directory bg
+color_steel = '#8098b0'  # cloud text
+
+[os]
+disabled = false
+style = "bg:color_slate fg:color_parchment"
+
+[os.symbols]
+Windows = "󰍲"
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = "󰣇"
+Artix = "󰣇"
+EndeavourOS = ""
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+Pop = ""
+
+[username]
+show_always = true
+style_user = "bg:color_slate fg:color_parchment"
+style_root = "bg:color_dusty_rose fg:color_parchment"
+format = '[ $user ]($style)'
+
+[hostname]
+ssh_only = true
+style = "bg:color_slate fg:color_parchment"
+format = '[@$hostname ]($style)'
+
+[directory]
+style = "fg:color_parchment bg:color_amber"
+format = "[ $path ]($style)"
+truncation_length = 4
+truncation_symbol = "…/"
+# fish_style_pwd_dir_length = 1  # disabled: starship bug #7086
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Developer" = "󰲋 "
+
+[git_branch]
+symbol = ""
+style = "bg:color_sage"
+format = '[[ $symbol $branch ](fg:color_parchment bg:color_sage)]($style)'
+
+[git_status]
+style = "bg:color_sage"
+format = '[[($all_status$ahead_behind )](fg:color_parchment bg:color_sage)]($style)'
+conflicted = "=${count}"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "*${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+[nodejs]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[c]
+symbol = " "
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[cpp]
+symbol = " "
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[php]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[java]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[kotlin]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[haskell]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[python]
+symbol = ""
+style = "bg:color_twilight"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:color_parchment bg:color_twilight)]($style)'
+
+[docker_context]
+symbol = ""
+style = "bg:color_muted_dusk"
+format = '[[ $symbol( $context) ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[conda]
+symbol = ""
+style = "bg:color_muted_dusk"
+format = '[[ $symbol( $environment) ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[pixi]
+style = "bg:color_muted_dusk"
+format = '[[ $symbol( $version)( $environment) ](fg:color_parchment bg:color_muted_dusk)]($style)'
+
+[kubernetes]
+disabled = false
+symbol = "☸"
+style = "bg:color_muted_dusk"
+format = '[[ $symbol $context(:$namespace) ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[terraform]
+symbol = "󱁢"
+style = "bg:color_muted_dusk"
+format = '[[ $symbol $workspace ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[aws]
+symbol = ""
+style = "bg:color_muted_dusk"
+format = '[[ $symbol ($profile)(@$region) ](fg:color_slate bg:color_muted_dusk)]($style)'
+
+[azure]
+disabled = false
+symbol = "󰠅"
+style = "bg:color_muted_dusk"
+format = '[[ $symbol ($subscription) ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[gcloud]
+disabled = false
+symbol = ""
+style = "bg:color_muted_dusk"
+format = '[[ $symbol ($project) ](fg:color_steel bg:color_muted_dusk)]($style)'
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:color_deep_dusk"
+format = '[[  $time ](fg:color_parchment bg:color_deep_dusk)]($style)'
+
+[cmd_duration]
+min_time = 2_000
+style = "bold fg:color_amber"
+format = "[ 󱎫 $duration]($style)"
+
+[line_break]
+disabled = false
+
+[character]
+disabled = false
+success_symbol = '[](bold fg:color_soft_sage)'
+error_symbol = '[](bold fg:color_dusty_rose)'
+vimcmd_symbol = '[](bold fg:color_soft_sage)'
+vimcmd_replace_one_symbol = '[](bold fg:color_wisteria)'
+vimcmd_replace_symbol = '[](bold fg:color_wisteria)'
+vimcmd_visual_symbol = '[](bold fg:color_amber)'
+
+[status]
+disabled = false
+style = "bold fg:color_dusty_rose"
+format = '[ ✘ $status]($style)'
+
+[sudo]
+disabled = false
+symbol = "⚡"
+style = "bold fg:color_dusty_rose"
+format = '[ $symbol]($style)'

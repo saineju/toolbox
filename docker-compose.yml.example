@@ -8,27 +8,34 @@ services:
         UID: 1000
         GID: 1000
         TERRAFORM: true
-        TERRAFORMVERSION: terraform
+        TERRAFORMVERSION: latest
         HELM: true
         HELMVERSION: latest
         KUBECTL: false
-        KUBECTLVERSION: kubectl
+        KUBECTLVERSION: latest
         HEROKU: true
         GCLOUD: true
+        AWSCLI: true
         AWS_SSM: true
-        AWS_ECSCLI: true
         HCLOUD: true
         HCLOUDVERSION: latest
         BITWARDEN: true
         BITWARDENVERSION: latest
-        LASTPASS: true
-        KEYVAULT: true
         VAULT: true
-        VAULTVERSION: vault
+        VAULTVERSION: latest
+        AZURE_CLI: true
+        STARSHIP: true
+        STARSHIPVERSION: latest
+        UV: true
+        UVVERSION: latest
+        KEYVAULT: true
+        MFAHELPER: true
     networks:
       - toolbox-net
     volumes:
       - toolbox-home:/home/toolbox
+      - ./.zshrc:/home/toolbox/.zshrc:ro
+      - ./starship/starship.gruvbox-rainbow.toml:/home/toolbox/.config/starship.toml:ro
     container_name: toolbox
     entrypoint: /bin/sleep infinity
 
