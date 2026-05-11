@@ -50,13 +50,13 @@ services:
       context: ./docker_vpn
     networks:
       - toolbox-net
-    environment:
-      VPN_USER: jsaine
     read_only: true
     ports:
       - 127.0.0.1:1080:1080
       - 127.0.0.1:3128:3128
-    #volumes:
+    volumes:
+    - ./docker_vpn/squid/squid.conf:/etc/squid/squid.conf:ro
+    - ./docker_vpn/squid/whitelist_domains.txt:/etc/squid/whitelist_domains.txt:ro
     #- ${HOME}/ovpn/ovpn.conf:/openvpn/ovpn.conf:ro
     tmpfs:
       - /tmp

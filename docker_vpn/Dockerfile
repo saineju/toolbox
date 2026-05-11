@@ -19,9 +19,6 @@ RUN chmod +x /scripts/* && \
     echo 'default ALL=NOPASSWD:/usr/sbin/squid' >> /etc/sudoers.d/default && \
     echo 'default ALL=NOPASSWD:/scripts/nft_logger.sh' >> /etc/sudoers.d/default && \
     visudo -c -f /etc/sudoers.d/default && \
-    printf 'access_log stdio:/var/log/squid/access.log combined\ncache_log /var/log/squid/cache.log\n' \
-        > /etc/squid/conf.d/docker-logging.conf && \
-    echo 'cache_dir null /tmp' > /etc/squid/conf.d/docker-cache.conf && \
     rm -f /var/log/squid/access.log /var/log/squid/cache.log && \
     mkfifo -m 0666 /var/log/squid/access.log /var/log/squid/cache.log
 
