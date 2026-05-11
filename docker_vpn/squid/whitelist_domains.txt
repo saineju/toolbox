@@ -1,0 +1,8 @@
+api.anthropic.com
+platform.claude.com
+registry.npmjs.org
+pypi.org
+files.pythonhosted.com
+github.com
+raw.githubusercontent.com
+release-assets.githubusercontent.com
