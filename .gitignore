@@ -5,3 +5,4 @@ docker-compose.yml
 *.swp
 Dockerfile.local
 *.conf
+!docker_vpn/squid/squid.conf
