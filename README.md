@@ -39,6 +39,23 @@ docker compose exec toolbox zsh
 By default the docker compose creates persistent home directory and mounts .zshrc and starship configuration toml from the local directory
 There are three default starship themes exported to starship directory, gruvbox-rainbow being the default, but you can change it as you please
 
+## Firewalled version
+Optionally you may want to limit / observe your traffic to prevent unexpected traffic, for this you may use the docker-compose-with-firewall.yml.example 
+instead of the normal docker-compose.yml.example. Both work similarly, but the firewalled version contains nft tables and squid to limit outbound
+access from the containers. The firewall also contains openvpn and openconnec vpn's for VPN needs.
+
+By default the firewall / squid will allow outbound access to ports 22, 80 and 443. The firewall container also exposes socks proxy in port 1080 and
+squid port to localhost, that can be used with for example firefox multi account containers.
+
+VPN Connectivity can be utilized with using `docker compose exec firewall_vpn sudo /scripts/start_vpn.sh [openvpn|openconnect]`. 
+Openvpn expects to find /openvpn/ovpn.ovpn config and asks for password and username, Openconnect will ask for connection url as well. 
+The container also supports environment variables for the configuration settings
+
+* VPN_USER - User for vpn connection
+* OPENCONNECT_URL - Url for open connect
+* ASK_OTP - Ask for OTP code if such is needed
+* OPENVPN_CONFIG_PATH - Alternate path for ovpn.conf
+
 ## Features
 
 Official cli's, tools an customizations. Most of these should support also tabulator autocomplete
