@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Read nftables NFLOG group and print dropped packet info to stdout."""
+
+## AI Generated script ##
+## Read nftables NFLOG group and print dropped packet info to stdout ##
+
 import os, socket, struct, sys
 
 NETLINK_NETFILTER    = 12
