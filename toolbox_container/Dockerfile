@@ -128,7 +128,7 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Helsinki /etc/localtime \
 RUN arch=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/') \
  && apt-get update \
  && apt-get install -y curl wget gnupg lsb-release apt-transport-https ca-certificates \
- && packages="gnupg-agent python3-minimal python3-pip python3-venv ssh bat fzf eza ripgrep" \
+ && packages="gnupg-agent python3-minimal python3-pip python3-venv ssh bat fzf eza ripgrep zsh-syntax-highlighting zsh-autosuggestions" \
  && packages="$packages zsh git vim nano language-pack-en software-properties-common lsof unzip jq dos2unix" \
  && packages="$packages dnsutils sshpass ncat rsync tzdata jo iputils-ping jc neovim python3-neovim" \
  && packages="$packages krb5-user proxychains-ng bsdmainutils libcap2" \

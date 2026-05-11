@@ -32,6 +32,18 @@ command -v ansible-playbook &>/dev/null && eval $(register-python-argcomplete an
 [[ -f /usr/share/google-cloud-sdk/completion.zsh.inc ]] \
   && source /usr/share/google-cloud-sdk/completion.zsh.inc
 
+[[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+  && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+
+# Auto suggestions
+[[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+  && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#005fff,bold,underline"
+
 # SSH Agent
 export SSH_ENV="$HOME/.ssh/ssh-agent-env"
 if [[ -f "$SSH_ENV" ]]; then
@@ -53,6 +65,13 @@ alias describe-account="describe.py account"
 alias start-session="aws ssm start-session"
 alias ls='eza --icons --group-directories-first'
 alias cat='batcat --paging=never'
+
+## History search
+autoload -U history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "${terminfo[kcuu1]}" history-beginning-search-backward-end
+bindkey "${terminfo[kcud1]}" history-beginning-search-forward-end
 
 ## Starship prompt
 eval "$(starship init zsh)"

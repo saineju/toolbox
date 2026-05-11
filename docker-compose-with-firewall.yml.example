@@ -30,13 +30,46 @@ services:
         UVVERSION: latest
         KEYVAULT: true
         MFAHELPER: true
-    networks:
-      - toolbox-net
+    depends_on:
+      - firewall_vpn
+    network_mode: "service:firewall_vpn"
+    environment:
+      HTTP_PROXY: http://127.0.0.1:3128
+      HTTPS_PROXY: http://127.0.0.1:3128
+      http_proxy: http://127.0.0.1:3128
+      https_proxy: http://127.0.0.1:3128
+      NO_PROXY: localhost,127.0.0.1
     volumes:
       - toolbox-home:/home/toolbox
       - ./.zshrc:/home/toolbox/.zshrc:ro
       - ./starship/starship.gruvbox-rainbow.toml:/home/toolbox/.config/starship.toml:ro
     entrypoint: /bin/sleep infinity
+  firewall_vpn:
+    container_name: firewall_vpn
+    build:
+      context: ./docker_vpn
+    networks:
+      - toolbox-net
+    environment:
+      VPN_USER: jsaine
+    read_only: true
+    ports:
+      - 127.0.0.1:1080:1080
+      - 127.0.0.1:3128:3128
+    #volumes:
+    #- ${HOME}/ovpn/ovpn.conf:/openvpn/ovpn.conf:ro
+    tmpfs:
+      - /tmp
+      - /run
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SETUID
+      - SETGID
+      - AUDIT_WRITE
+      - MKNOD
 
 volumes:
   toolbox-home:
